@@ -4,8 +4,6 @@ Nombre del estudiante: Jesus Benjamin Gonzalez Vallejo
 Matrícula: 2630199
 Grupo: 3
 Tarea: Manejo de Cadenas de Texto (Strings) en Python
-Repositorio de GitHub: https://github.com/J-B-G0NZ4L3Z/Homework.git
-
 """
 
 """
@@ -32,8 +30,13 @@ PRINCIPIOS Y BUENAS PRÁCTICAS
 - Usar métodos de string en lugar de reescribir lógica básica.
 - Diseñar validaciones claras: primero verificar que no esté vacío, luego el formato.
 - Escribir código legible: nombres de variables claros y mensajes de error entendibles.
+- Escribir el código directamente (sin funciones def), con input(), if/else
+  y print(), para que sea más compacto y fácil de seguir de arriba hacia abajo.
 
 """
+
+# Constante(UPPER_SNAKE_CASE) en todos los programas esta es la constante 
+ERROR_MESSAGE = "Error: invalid input"
 
 # PROBLEMA 1: Formateador de nombre completo (nombre + iniciales)
 """
@@ -43,52 +46,43 @@ lo formatea en formato de título (Title Case) y extrae las iniciales
 en mayúsculas separadas por puntos.
 
 Entradas:
-- full_name (string; nombre completo, mayúsculas/minúsculas mezcladas, espacios extra).
+full_name (string; nombre completo, mayúsculas/minúsculas mezcladas, espacios extra).
 
 Salidas:
-- "Formatted name: <Name In Title Case>"
-- "Initials: <X.X.X.>"
+"Formatted name: <Name In Title Case>"
+"Initials: <X.X.X.>"
 
 Validaciones:
-- full_name no debe estar vacío después de strip().
-- Debe contener al menos dos palabras (nombre y apellido).
-- No puede ser solo espacios.
+full_name no debe estar vacío después de strip().
+Debe contener al menos dos palabras (nombre y apellido).
+No puede ser solo espacios.
 
 Casos de prueba:
-1) Normal: "juan carlos tovar" -> Formatted: Juan Carlos Tovar, Initials: J.C.T.
-2) Border (Borde): "  maria  " -> Error: invalid input (solo una palabra).
-3) Error: "   " -> Error: invalid input (cadena vacía).
+1) Normal: "jesus benjamin gonzalez vallejo" - Formatted: Jesus benjamin gonzalez vallejo, Initials: J.B.G.V.
+2) Border (Borde): " agripino  " - Error: invalid input (solo una palabra).
+3) Error: "   " - Error: invalid input (cadena vacía).
 """
+print("\nProblem 1")
+print("Full name formatter")
+full_name_input = input("Enter your full name: ")
+cleaned_name = full_name_input.strip()
+words = cleaned_name.split()  # split() ignora los espacios extra
 
-def format_full_name(full_name_input):
-    cleaned_name = full_name_input.strip()
-    
-    # Validar si está vacío o solo contiene espacios
-    if not cleaned_name:
-        return "Error: invalid input"
-    
-    words = cleaned_name.split()
-    
-    # Validar que contenga al menos dos palabras
-    if len(words) < 2:
-        return "Error: invalid input"
-    
-    formatted_name = cleaned_name.title()
-    
-    initials_list = []
+# Una cadena vacía o de solo espacios da 0 palabras, y "agripino" da 1: ambas < 2
+if len(words) < 2:
+    print(ERROR_MESSAGE)
+else:
+    formatted_name = " ".join(words).title()
+
+    initials_str = ""
     for word in words:
-        initials_list.append(word[0].upper() + ".")
-    
-    initials_str = "".join(initials_list)
-    
+        initials_str = initials_str + word[0].upper() + "."
+
     print(f"Formatted name: {formatted_name}")
     print(f"Initials: {initials_str}")
-    return True
 
 
-# ====================================================================
 # PROBLEMA 2: Validador simple de correo electrónico (estructura + dominio)
-# ====================================================================
 """
 Problem 2: Simple email validator (structure + domain)
 Descripción: Valida la estructura básica de un correo verificando que tenga 
@@ -96,45 +90,45 @@ exactamente una '@', al menos un '.' después de la '@' y sin espacios en blanco
 Extrae el dominio si es válido.
 
 Entradas:
-- email_text (string).
+email_text (string).
 
 Salidas:
-- "Valid email: true" o "Valid email: false"
-- Si es válido: "Domain: <domain_part>"
+"Valid email: true" o "Valid email: false"
+Si es válido: "Domain: <domain_part>"
 
 Validaciones:
-- email_text no vacío tras strip().
-- Debe contener exactamente una '@'.
-- No se permiten espacios en blanco.
-- Al menos un '.' después de la '@'.
+email_text no vacío tras strip().
+Debe contener exactamente una '@'.
+No se permiten espacios en blanco.
+Al menos un '.' después de la '@'.
 
 Casos de prueba:
-1) Normal: "user@example.com" -> Valid: true, Domain: example.com
-2) Border: "user@com" -> Valid: false (falta punto en el dominio)
-3) Error: "user name@domain.com" -> Valid: false (contiene espacio)
+1) Normal: "user@example.com" - Valid: true, Domain: example.com
+2) Border: "user@com" - Valid: false (falta punto en el dominio)
+3) Error: "user name@domain.com" - Valid: false (contiene espacio)
 """
+print("\nProblema 2")
+print("Email validator")
+email_text = input("Enter an email: ").strip()
 
-def validate_email(email_text):
-    cleaned_email = email_text.strip()
-    
-    if not cleaned_email or " " in cleaned_email:
-        print("Valid email: false")
-        return False
-        
-    if cleaned_email.count("@") != 1:
-        print("Valid email: false")
-        return False
-        
-    at_index = cleaned_email.find("@")
-    domain_part = cleaned_email[at_index + 1:]
-    
-    if "." not in domain_part or domain_part.startswith(".") or domain_part.endswith("."):
-        print("Valid email: false")
-        return False
-        
+# Primero se revisa la estructura general (bandera booleana)
+is_valid = (email_text != "" and " " not in email_text
+            and email_text.count("@") == 1)
+
+# Si la estructura es correcta, se revisa el dominio (lo que va después de '@')
+domain_part = ""
+if is_valid:
+    at_index = email_text.find("@")
+    domain_part = email_text[at_index + 1:]
+    is_valid = ("." in domain_part
+                and not domain_part.startswith(".")
+                and not domain_part.endswith("."))
+
+if is_valid:
     print("Valid email: true")
     print(f"Domain: {domain_part}")
-    return True
+else:
+    print("Valid email: false")
 
 
 # PROBLEMA 3: Verificador de palíndromos (ignorando espacios y mayúsculas)
@@ -159,28 +153,22 @@ Casos de prueba:
 2) Border: "Ab a" -> Is palindrome: true
 3) Error: "Hi" -> Error: invalid input (muy corto)
 """
+print("\nProblem 3")
+print("Palindrome checker ---")
+phrase = input("Enter a phrase: ")
+normalized = phrase.strip().lower().replace(" ", "")
 
-def check_palindrome(phrase):
-    cleaned_phrase = phrase.strip()
-    
-    if not cleaned_phrase:
-        return "Error: invalid input"
-        
-    normalized = cleaned_phrase.lower().replace(" ", "")
-    
-    if len(normalized) < 3:
-        return "Error: invalid input"
-        
-    is_pal = normalized == normalized[::-1]
-    
+# Si queda con menos de 3 caracteres (incluida la cadena vacía) es un error
+if len(normalized) < 3:
+    print(ERROR_MESSAGE)
+else:
+    is_pal = (normalized == normalized[::-1])  # [::-1] invierte el string
     print(f"Normalized phrase: {normalized}")
     print(f"Is palindrome: {str(is_pal).lower()}")
-    return is_pal
 
 
-# ====================================================================
 # PROBLEMA 4: Estadísticas de palabras en una oración (longitudes, primera y última)
-# ====================================================================
+
 """
 Problem 4: Sentence word stats (lengths and first/last word)
 Descripción: Analiza una oración para extraer el conteo total de palabras, 
@@ -205,39 +193,32 @@ Casos de prueba:
 2) Border: "Hello" -> Count: 1, First: Hello, Last: Hello, Shortest: Hello, Longest: Hello
 3) Error: "   " -> Error: invalid input
 """
+print("\nProblem 4")
+print("Sentence word stats ---")
+sentence = input("Enter a sentence: ")
+sentence_words = sentence.strip().split()
 
-def analyze_sentence(sentence):
-    cleaned_sentence = sentence.strip()
-    
-    if not cleaned_sentence:
-        return "Error: invalid input"
-        
-    words = cleaned_sentence.split()
-    if not words:
-        return "Error: invalid input"
-        
-    word_count = len(words)
-    first_word = words[0]
-    last_word = words[-1]
-    
-    shortest_word = words[0]
-    longest_word = words[0]
-    
-    for w in words:
-        if len(w) < len(shortest_word):
-            shortest_word = w
-        if len(w) > len(longest_word):
-            longest_word = w
-            
-    print(f"Word count: {word_count}")
-    print(f"First word: {first_word}")
-    print(f"Last word: {last_word}")
+if len(sentence_words) == 0:
+    print(ERROR_MESSAGE)
+else:
+    shortest_word = sentence_words[0]
+    longest_word = sentence_words[0]
+
+    for current_word in sentence_words:
+        if len(current_word) < len(shortest_word):
+            shortest_word = current_word
+        if len(current_word) > len(longest_word):
+            longest_word = current_word
+
+    print(f"Word count: {len(sentence_words)}")
+    print(f"First word: {sentence_words[0]}")
+    print(f"Last word: {sentence_words[-1]}")
     print(f"Shortest word: {shortest_word}")
     print(f"Longest word: {longest_word}")
-    return True
 
 
 # PROBLEMA 5: Clasificador de fortaleza de contraseñas
+
 """
 Problem 5: Password strength classifier
 Descripción: Clasifica una contraseña como débil (weak), media (medium) 
@@ -259,40 +240,43 @@ Casos de prueba:
 2) Border: "password123" -> Password strength: medium
 3) Error: "" -> Error: invalid input
 """
+print("\nProblem 5")
+print("Password strength ---")
+password_input = input("Enter a password: ")
 
-def classify_password(password_input):
-    if not password_input:
-        return "Error: invalid input"
-        
+if password_input == "":
+    print(ERROR_MESSAGE)
+else:
     length = len(password_input)
     has_upper = False
     has_lower = False
     has_digit = False
     has_symbol = False
-    
+
+    # Cada carácter es de un solo tipo, así que bastan if separados
     for char in password_input:
         if char.isupper():
             has_upper = True
-        elif char.islower():
+        if char.islower():
             has_lower = True
-        elif char.isdigit():
+        if char.isdigit():
             has_digit = True
-        elif not char.isalnum():
+        if not char.isalnum():
             has_symbol = True
-            
+
     if length < 8 or (not has_upper and not has_digit):
         strength = "weak"
-    elif length >= 8 and ((has_upper and has_lower) or has_digit) and not has_symbol:
-        strength = "medium"
-    elif length >= 8 and has_upper and has_lower and has_digit and has_symbol:
-        strength = "strong"
     else:
-        strength = "medium"
-        
+        if has_upper and has_lower and has_digit and has_symbol:
+            strength = "strong"
+        else:
+            strength = "medium"
+
     print(f"Password strength: {strength}")
-    return strength
+
 
 # PROBLEMA 6: Formateador de etiquetas de productos (texto de ancho fijo)
+
 """
 Problem 6: Product label formatter (fixed-width text)
 Descripción: Genera una etiqueta de producto en una sola línea combinando 
@@ -311,34 +295,35 @@ Validaciones:
 - price_value debe poder convertirse a un número positivo.
 
 Casos de prueba:
-1) Normal: "Laptop", 1200.50 -> Label: "Product: Laptop | Price: $1200.5"
+1) Normal: "Pen", 5.5 -> Label: "Product: Pen | Price: $5.5" + 4 espacios (30 caracteres)
 2) Border: "VeryLongProductNamethatexceedslimit", 99.99 -> Se recorta a 30 caracteres.
 3) Error: "", 50 -> Error: invalid input
+
 """
 
-def format_product_label(product_name, price_value):
-    cleaned_name = product_name.strip()
-    
-    if not cleaned_name:
-        return "Error: invalid input"
-        
-    try:
-        numeric_price = float(price_value)
-        if numeric_price < 0:
-            return "Error: invalid input"
-    except ValueError:
-        return "Error: invalid input"
-        
-    raw_label = f"Product: {cleaned_name} | Price: ${numeric_price}"
-    
+print("\nProblem 6")
+print("Product label formatter")
+product_name = input("Enter product name: ").strip()
+price_text = input("Enter price: ")
+
+# Si el precio no se puede convertir a número, se marca como inválido (-1)
+try:
+    numeric_price = float(price_text)
+except ValueError:
+    numeric_price = -1
+
+if product_name == "" or numeric_price <= 0:
+    print(ERROR_MESSAGE)
+else:
+    raw_label = f"Product: {product_name} | Price: ${numeric_price}"
+
     # Formato de ancho fijo: exactamente 30 caracteres
     if len(raw_label) < 30:
-        fixed_label = raw_label.ljust(30)
+        fixed_label = raw_label.ljust(30)  # rellena con espacios
     else:
-        fixed_label = raw_label[:30]
-        
+        fixed_label = raw_label[:30]  # recorta
+
     print(f"Label: \"{fixed_label}\" (Length: {len(fixed_label)})")
-    return fixed_label
 
 
 """
@@ -362,24 +347,3 @@ REFERENCIAS
 4) Sweigart, A. (2019). Automate the Boring Stuff with Python (2nd ed.). No Starch Press.
 5) Python Documentation Team. (2026). Input and Output Operations and Best Practices for Data Validation in Python Applications.
 """
-
-# Bloque de ejecución para probar los casos de prueba
-if __name__ == "__main__":
-    print("Casos de Prueba")
-    print("\n[Prueba Problema 1]")
-    format_full_name("Jesus Benjamin Gonzalez Vallejo")
-    
-    print("\n[Prueba Problema 2]")
-    validate_email("2630199@upv.edu.mx")
-    
-    print("\n[Prueba Problema 3]")
-    check_palindrome("Anita lava la tina")
-    
-    print("\n[Prueba Problema 4]")
-    analyze_sentence("En python esta chido trabajar")
-    
-    print("\n[Prueba Problema 5]")
-    classify_password("P@ssw0rd123")
-    
-    print("\n[Prueba Problema 6]")
-    format_product_label("Laptop", 1200.50)
